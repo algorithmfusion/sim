@@ -10,8 +10,8 @@ import com.algorithmfusion.anu.flow.FlowObserversRegistry;
 import com.algorithmfusion.anu.sm.api.State;
 import com.algorithmfusion.anu.sm.api.StateMachine;
 import com.algorithmfusion.anu.sm.api.Transition;
-import com.algorithmfusion.anu.sm.observers.StateObserver;
-import com.algorithmfusion.anu.sm.observers.TextTransitionObserver;
+import com.algorithmfusion.anu.sm.observers.api.StateObserver;
+import com.algorithmfusion.anu.sm.observers.impl.TextTransitionObserver;
 
 public class FlowTui implements StateObserver, Runnable {
 

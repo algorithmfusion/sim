@@ -1,7 +1,7 @@
 package com.algorithmfusion.apps.sim.anu.tuitenetprocess;
 
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextStateObserver;
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextTransitionObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextStateObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextTransitionObserver;
 import static com.algorithmfusion.anu.sm.triggers.TriggersFactory.createTimerTrigger;
 
 import java.util.Arrays;
@@ -14,13 +14,16 @@ import com.algorithmfusion.anu.sm.api.State;
 import com.algorithmfusion.anu.sm.api.Transition;
 import com.algorithmfusion.anu.sm.base.BaseState;
 import com.algorithmfusion.anu.sm.base.BaseTransition;
-import com.algorithmfusion.anu.sm.observers.ConditionalTransitionObserver;
+import com.algorithmfusion.anu.sm.observers.impl.ConditionalTransitionObserver;
 import com.algorithmfusion.anu.sm.triggers.TimerTrigger;
+import com.algorithmfusion.anu.sm.triggers.TrigableStateMachineTransition;
 import com.algorithmfusion.anu.storage.api.ObjectStorage;
 import com.algorithmfusion.anu.storage.impl.InMemoryObjectStorage;
-import com.algorithmfusion.anu.storage.observers.ObjectStoreTransitionObserver;
-import com.algorithmfusion.anu.storage.predicates.ObjectStoredPredicate;
-import com.algorithmfusion.anu.storage.triggers.ObjectsAvailabilityOnStateTrigger;
+import com.algorithmfusion.anu.storage.observers.StoreKeyValueOnStateObserver;
+import com.algorithmfusion.anu.storage.observers.StoreKeyValueOnTransitionObserver;
+import com.algorithmfusion.anu.storage.predicates.IsKeyStored;
+import com.algorithmfusion.anu.storage.triggers.OnKeyValueAvailabilityTransitionObserverTrigger;
+import com.algorithmfusion.anu.storage.triggers.OnKeysAvailabilityStateObserverTrigger;
 import com.algorithmfusion.apps.sim.anu.tui.FlowTui;
 
 public class MainTuiCreateSps {
@@ -42,7 +45,7 @@ public class MainTuiCreateSps {
 		State spsAckReceived = new BaseState();
 		State spsCreationDone = new BaseState();
 
-		Transition cbsReceived = BaseTransition.builder().from(collectingInputForSpsCreation).to(creatingSpsAutomatically).build();
+		Transition cbsReceived = BaseTransition.builder().from(collectingInputForSpsCreation).to(collectingInputForSpsCreation).build();
 		Transition opcReceived = BaseTransition.builder().from(collectingInputForSpsCreation).to(collectingInputForSpsCreation).build();
 		Transition requiredInputCollected = BaseTransition.builder().from(collectingInputForSpsCreation).to(creatingSpsAutomatically).build();
 		Transition createSpsManually = BaseTransition.builder().from(collectingInputForSpsCreation).to(creatingSpsManually).build();
@@ -64,14 +67,23 @@ public class MainTuiCreateSps {
 							.stateMachineObserver(flowObserver)
 						.build();
 		
-		int interval = random(5, 15) * 1000;
-		
-		int ticks = interval/1000;
+		String cbsReceivedTimerId = "cbsReceivedTimerId";
+		int cbsInterval = random(5, 15) * 1000;
+		int cbsTicks = cbsInterval/1000;
+		String opcReceivedTimerId = "opcReceivedTimerId";
+		int opcInterval = random(5, 15) * 1000;
+		int opcTicks = opcInterval/1000;
 		
 		FlowObserversRegistry flowObserversRegistry = FlowObserversRegistry.builder()
 		
-		.addPerformTransitionObserver(cbsReceived, createTextTransitionObserver("Perform transition(cbsReceived)"), new ObjectStoreTransitionObserver<Transition, String>(objectStorage, cbsReceived, "CBS"))
-		.addPerformTransitionObserver(opcReceived, createTextTransitionObserver("Perform transition(opcReceived)") , new ObjectStoreTransitionObserver<Transition, String>(objectStorage, opcReceived, "OPC"))
+		.addPerformTransitionObserver(cbsReceived,
+			createTextTransitionObserver("Perform transition(cbsReceived)"),
+			new StoreKeyValueOnTransitionObserver<Transition, String>(objectStorage, cbsReceived, "CBS"))
+		
+		.addPerformTransitionObserver(opcReceived,
+			createTextTransitionObserver("Perform transition(opcReceived)"),
+			new StoreKeyValueOnTransitionObserver<Transition, String>(objectStorage, opcReceived, "OPC"))
+		
 		.addPerformTransitionObserver(requiredInputCollected, createTextTransitionObserver("Perform transition(requiredInputCollected)"))
 		.addPerformTransitionObserver(createSpsManually, createTextTransitionObserver("Perform transition(createSpsManually)"))
 		.addPerformTransitionObserver(doneAutomaticCreation, createTextTransitionObserver("Perform transition(doneAutomaticCreation)"))
@@ -84,18 +96,29 @@ public class MainTuiCreateSps {
 		.addPerformTransitionObserver(notOk, createTextTransitionObserver("Perform transition(notOk)"))
 		.addPerformTransitionObserver(ok, createTextTransitionObserver("Perform transition(ok)"))
 
-/* */		.addPrepareTransitionObserver(cbsReceived, new ConditionalTransitionObserver(
-				objectStorage.store("cbsReceived", createTimerTrigger(flow, cbsReceived, interval, ticks, "cbsReceived")).getPrepare(),
-				new ObjectStoredPredicate(objectStorage).negate()))
-/* */		.addDisposeTransitionObserver(cbsReceived, new ConditionalTransitionObserver(
-				objectStorage.retrieve("cbsReceived", TimerTrigger.class).getDispose(),
-				new ObjectStoredPredicate(objectStorage).negate()))
+		.addPrepareTransitionObserver(cbsReceived, 
+			new ConditionalTransitionObserver(
+				objectStorage.store(cbsReceivedTimerId, createTimerTrigger(flow, cbsReceived, cbsInterval, cbsTicks, cbsReceivedTimerId)).getPrepare(),
+				new IsKeyStored<Transition>(objectStorage).negate()))
+		.addDisposeTransitionObserver(cbsReceived,
+			new ConditionalTransitionObserver(
+				objectStorage.retrieve(cbsReceivedTimerId, TimerTrigger.class).getDispose(),
+				new IsKeyStored<Transition>(objectStorage).negate()))
 		
-//		.addPrepareTransitionObserver(opcReceived, new ConditionalTransitionObserver(objectStorage.store("opcReceived",
-//				new TimerTrigger(flow, opcReceived, random(5, 15) * 1000, 10, "opcReceived")).getPrepare(), new ObjectStoredPredicate(objectStorage).negate()))
-//		.addDisposeTransitionObserver(opcReceived, objectStorage.retrieve("opcReceived", TimerTrigger.class).getDispose())
+		.addPrepareTransitionObserver(opcReceived,
+			new ConditionalTransitionObserver(
+				objectStorage.store(opcReceivedTimerId, createTimerTrigger(flow, opcReceived, opcInterval, opcTicks, opcReceivedTimerId)).getPrepare(),
+				new IsKeyStored<Transition>(objectStorage).negate()))
+		.addDisposeTransitionObserver(opcReceived,
+			new ConditionalTransitionObserver(
+				objectStorage.retrieve(opcReceivedTimerId, TimerTrigger.class).getDispose(),
+				new IsKeyStored<Transition>(objectStorage).negate()))
 		
-		.addLeaveStateObservers(collectingInputForSpsCreation, createTextStateObserver("Leave State(collecstingInputForSpsCreation)"))
+		.addPrepareTransitionObserver(doneAutomaticCreation,
+			new OnKeyValueAvailabilityTransitionObserverTrigger<State, String>(
+				new TrigableStateMachineTransition(flow, doneAutomaticCreation), objectStorage, creatingSpsAutomatically, "SPS"))
+				
+		.addLeaveStateObservers(collectingInputForSpsCreation, createTextStateObserver("Leave State(collectingInputForSpsCreation)"))
 		.addLeaveStateObservers(creatingSpsAutomatically, createTextStateObserver("Leave State(creatingSpsAutomatically)"))
 		.addLeaveStateObservers(creatingSpsManually, createTextStateObserver("Leave State(creatingSpsManually)"))
 		.addLeaveStateObservers(spsCreated, createTextStateObserver("Leave State(spsCreated)"))
@@ -105,8 +128,15 @@ public class MainTuiCreateSps {
 		.addLeaveStateObservers(spsAckReceived, createTextStateObserver("Leave State(spsAckReceived)"))
 		.addLeaveStateObservers(spsCreationDone, createTextStateObserver("Leave State(spsCreationDone)"))
 		
-		.addEnterStateObservers(collectingInputForSpsCreation, createTextStateObserver("Enter State(collectingInputForSpsCreation)"), tui, new ObjectsAvailabilityOnStateTrigger(flow, requiredInputCollected, objectStorage, Arrays.asList(cbsReceived, opcReceived)))
-		.addEnterStateObservers(creatingSpsAutomatically, createTextStateObserver("Enter State(creatingSpsAutomatically)"), tui)
+		.addEnterStateObservers(collectingInputForSpsCreation,
+			createTextStateObserver("Enter State(collectingInputForSpsCreation)"), tui,
+			new OnKeysAvailabilityStateObserverTrigger(
+				new TrigableStateMachineTransition(flow, requiredInputCollected), objectStorage, Arrays.asList(cbsReceived, opcReceived)))
+		
+		.addEnterStateObservers(creatingSpsAutomatically,
+			createTextStateObserver("Enter State(creatingSpsAutomatically)"), tui,
+			new StoreKeyValueOnStateObserver<State, String>(objectStorage, creatingSpsAutomatically, "SPS"))
+		
 		.addEnterStateObservers(creatingSpsManually, createTextStateObserver("Enter State(creatingSpsManually)"), tui)
 		.addEnterStateObservers(spsCreated, createTextStateObserver("Enter State(spsCreated)"), tui)
 		.addEnterStateObservers(sendingSps, createTextStateObserver("Enter State(sendingSps)"), tui)

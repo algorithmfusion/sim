@@ -5,8 +5,8 @@ import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.ENTER_STATE;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.LEAVE_STATE;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.PERFORM_TRANSITION;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.PREPARE_TRANSITION;
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextStateObserver;
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextTransitionObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextStateObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextTransitionObserver;
 import static com.algorithmfusion.anu.sm.triggers.TriggersFactory.createTimerTrigger;
 
 import java.io.FileNotFoundException;
@@ -34,8 +34,8 @@ import com.algorithmfusion.anu.sm.api.State;
 import com.algorithmfusion.anu.sm.api.Transition;
 import com.algorithmfusion.anu.sm.base.BaseState;
 import com.algorithmfusion.anu.sm.base.BaseTransition;
-import com.algorithmfusion.anu.sm.observers.StateObserver;
-import com.algorithmfusion.anu.sm.observers.TransitionObserver;
+import com.algorithmfusion.anu.sm.observers.api.StateObserver;
+import com.algorithmfusion.anu.sm.observers.api.TransitionObserver;
 import com.algorithmfusion.anu.sm.triggers.TimerTrigger;
 import com.algorithmfusion.anu.storage.api.ObjectStorage;
 import com.algorithmfusion.anu.storage.impl.InMemoryObjectStorage;
@@ -55,7 +55,7 @@ public class MainTuiApplicationWithBPMN {
 		createStateMachine(definitions, new InMemoryObjectStorage());
 	}
 
-	private static Map<String, Object> context = new HashMap<>();
+//	private static Map<String, Object> context = new HashMap<>();
 	
 	private static void createStateMachine(Definitions definitions, ObjectStorage objectStorage) {
 		List<Object> processElements = definitions.getProcess().getExtensionElementsOrStartEventOrTask();
@@ -76,7 +76,7 @@ public class MainTuiApplicationWithBPMN {
 
 		FlowTui tui = new FlowTui();
 		
-		context.put("tui", tui);
+//		context.put("tui", tui);
 		
 		FlowObserver flowObserver = new FlowObserver();
 		
@@ -136,16 +136,16 @@ public class MainTuiApplicationWithBPMN {
 		switch (extensionValueType) {
 			case "TextStateObserver":
 				return createTextStateObserver(parameters[0]);
-			case "Context":
-				return createContextStateObserver(parameters[0]);
+//			case "Context":
+//				return createContextStateObserver(parameters[0]);
 			default:
 				return null;
 		}
 	}
 
-	private static StateObserver createContextStateObserver(String stateObserverParameter) {
-		return (StateObserver) context.get(stateObserverParameter);
-	}
+//	private static StateObserver createContextStateObserver(String stateObserverParameter) {
+//		return (StateObserver) context.get(stateObserverParameter);
+//	}
 
 	private static String extractExtensionValueType(String trimedText) {
 		return trimedText.substring(0, trimedText.indexOf('('));

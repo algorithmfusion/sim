@@ -1,7 +1,7 @@
 package com.algorithmfusion.apps.sim.anu.tuidoor;
 
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextStateObserver;
-import static com.algorithmfusion.anu.sm.observers.ObserversFactory.createTextTransitionObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextStateObserver;
+import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextTransitionObserver;
 import static com.algorithmfusion.anu.sm.triggers.TriggersFactory.createTimerTrigger;
 
 import com.algorithmfusion.anu.flow.BpmnFlow;

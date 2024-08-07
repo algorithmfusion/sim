@@ -9,7 +9,7 @@ import java.util.Map;
 import com.algorithmfusion.anu.sm.api.State;
 import com.algorithmfusion.anu.sm.api.StateMachine;
 import com.algorithmfusion.anu.sm.api.Transition;
-import com.algorithmfusion.anu.sm.observers.StateObserver;
+import com.algorithmfusion.anu.sm.observers.api.StateObserver;
 
 public class FlowTui2 implements StateObserver, Runnable {
 
