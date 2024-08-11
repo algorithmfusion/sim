@@ -24,9 +24,9 @@ import org.omg.spec.bpmn._20100524.model.Definitions.Process.SequenceFlow;
 import org.omg.spec.bpmn._20100524.model.Definitions.Process.StartEvent;
 import org.omg.spec.bpmn._20100524.model.Definitions.Process.Task;
 
-import com.algorithmfusion.anu.flow.BpmnFlow;
-import com.algorithmfusion.anu.flow.BpmnState;
-import com.algorithmfusion.anu.flow.BpmnTransition;
+import com.algorithmfusion.anu.flow.Flow;
+import com.algorithmfusion.anu.flow.FlowState;
+import com.algorithmfusion.anu.flow.FlowTransition;
 import com.algorithmfusion.anu.flow.FlowConfiguration;
 import com.algorithmfusion.anu.flow.FlowObservableLifeCycle;
 import com.algorithmfusion.anu.flow.FlowObserver;
@@ -78,7 +78,7 @@ public class MainTuiApplicationWithBPMN2 {
 		
 		FlowObserver flowObserver = new FlowObserver();
 		
-		BpmnFlow flow = BpmnFlow.builder()
+		Flow flow = Flow.builder()
 							.id(definitions.getProcess().getId())
 							.name(definitions.getProcess().getName())
 							.stateMachineObserver(flowObserver)
@@ -156,7 +156,7 @@ public class MainTuiApplicationWithBPMN2 {
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -171,7 +171,7 @@ public class MainTuiApplicationWithBPMN2 {
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToPerformTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -186,7 +186,7 @@ public class MainTuiApplicationWithBPMN2 {
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -196,7 +196,7 @@ public class MainTuiApplicationWithBPMN2 {
 		});
 	}
 
-	private static TransitionObserver textToTransitionObserver(FlowConfiguration flowConfiguration, String text, BpmnFlow flow, Transition transition, ObjectStorage objectStorage) {
+	private static TransitionObserver textToTransitionObserver(FlowConfiguration flowConfiguration, String text, Flow flow, Transition transition, ObjectStorage objectStorage) {
 		String trimedText = text.trim();
 		String extensionValueType = extractExtensionValueType(trimedText);
 		Object[] parameters = extractExtensionValueTypeParameters(trimedText);
@@ -208,7 +208,7 @@ public class MainTuiApplicationWithBPMN2 {
 		Map<String, State> idToState = new HashMap<>();
 		tasks.forEach(task -> idToState.put(
 			task.getId(),
-			BpmnState.builder()
+			FlowState.builder()
 				.id(task.getId())
 				.name(task.getName())
 			.build())
@@ -220,7 +220,7 @@ public class MainTuiApplicationWithBPMN2 {
 		Map<String, Transition> idToTransition = new HashMap<>();
 		sequenceFlows.forEach(sequenceFlow -> idToTransition.put(
 			sequenceFlow.getId(),
-			BpmnTransition.builder()
+			FlowTransition.builder()
 					.from(idToState.get(sequenceFlow.getSourceRef()))
 					.to(idToState.get(sequenceFlow.getTargetRef()))
 					.id(sequenceFlow.getId())
@@ -359,7 +359,7 @@ public class MainTuiApplicationWithBPMN2 {
 		return objects.toArray();
 	}
 
-	private static Object[] toObjectArray(Object[] parameters, ObjectStorage objectStorage, BpmnFlow flow, Transition transition) {
+	private static Object[] toObjectArray(Object[] parameters, ObjectStorage objectStorage, Flow flow, Transition transition) {
 		List<Object> objects = new ArrayList<>(Arrays.asList(parameters));
 		objects.add(objectStorage);
 		objects.add(flow);

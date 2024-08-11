@@ -44,7 +44,7 @@ public class FlowTui2 implements StateObserver, Runnable {
 	}
 
 	private static String getSelectionTextFromTransition(Transition transition) {
-		return ((com.algorithmfusion.anu.flow.BpmnTransition) transition).getName();
+		return ((com.algorithmfusion.anu.flow.FlowTransition) transition).getName();
 	}
 
 	private Transition selectTransition() throws IOException {

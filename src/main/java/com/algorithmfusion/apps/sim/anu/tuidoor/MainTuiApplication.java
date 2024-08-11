@@ -4,7 +4,7 @@ import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createT
 import static com.algorithmfusion.anu.sm.observers.impl.ObserversFactory.createTextTransitionObserver;
 import static com.algorithmfusion.anu.sm.triggers.TriggersFactory.createTimerTrigger;
 
-import com.algorithmfusion.anu.flow.BpmnFlow;
+import com.algorithmfusion.anu.flow.Flow;
 import com.algorithmfusion.anu.flow.FlowObserver;
 import com.algorithmfusion.anu.flow.FlowObserversRegistry;
 import com.algorithmfusion.anu.sm.api.State;
@@ -48,7 +48,7 @@ public class MainTuiApplication {
 
 		FlowObserver flowObserver = new FlowObserver();
 		
-		BpmnFlow flow = BpmnFlow.builder()
+		Flow flow = Flow.builder()
 					.stateMachineObserver(flowObserver)
 				.build();
 		

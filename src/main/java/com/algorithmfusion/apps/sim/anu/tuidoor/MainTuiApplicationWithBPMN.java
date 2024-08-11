@@ -25,7 +25,7 @@ import org.omg.spec.bpmn._20100524.model.Definitions.Process.SequenceFlow;
 import org.omg.spec.bpmn._20100524.model.Definitions.Process.StartEvent;
 import org.omg.spec.bpmn._20100524.model.Definitions.Process.Task;
 
-import com.algorithmfusion.anu.flow.BpmnFlow;
+import com.algorithmfusion.anu.flow.Flow;
 import com.algorithmfusion.anu.flow.FlowObservableLifeCycle;
 import com.algorithmfusion.anu.flow.FlowObserver;
 import com.algorithmfusion.anu.flow.FlowObserversRegistry;
@@ -80,7 +80,7 @@ public class MainTuiApplicationWithBPMN {
 		
 		FlowObserver flowObserver = new FlowObserver();
 		
-		BpmnFlow flow = BpmnFlow.builder()
+		Flow flow = Flow.builder()
 							.id(definitions.getProcess().getId())
 							.name(definitions.getProcess().getName())
 							.stateMachineObserver(flowObserver)
@@ -162,7 +162,7 @@ public class MainTuiApplicationWithBPMN {
 			Builder builder,
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -176,7 +176,7 @@ public class MainTuiApplicationWithBPMN {
 			Builder builder,
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToPerformTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -190,7 +190,7 @@ public class MainTuiApplicationWithBPMN {
 			Builder builder,
 			Map<String, Transition> idToTransition,
 			Multimap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues,
-			BpmnFlow flow,
+			Flow flow,
 			ObjectStorage objectStorage) {
 		sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues.keySet().forEach(sequenceFlowId -> {
 			Transition transition = idToTransition.get(sequenceFlowId);
@@ -200,7 +200,7 @@ public class MainTuiApplicationWithBPMN {
 		});
 	}
 
-	private static TransitionObserver textToTransitionObserver(String text, BpmnFlow flow, Transition transition, ObjectStorage objectStorage) {
+	private static TransitionObserver textToTransitionObserver(String text, Flow flow, Transition transition, ObjectStorage objectStorage) {
 		String trimedText = text.trim();
 		String extensionValueType = extractExtensionValueType(trimedText);
 		String[] parameters = extractExtensionValueTypeParameters(trimedText);
@@ -216,7 +216,7 @@ public class MainTuiApplicationWithBPMN {
 		}
 	}
 
-	private static TransitionObserver createTimerTriggerPrepareObserver(String[] parameters, ObjectStorage objectStorage, BpmnFlow flow, Transition transition) {
+	private static TransitionObserver createTimerTriggerPrepareObserver(String[] parameters, ObjectStorage objectStorage, Flow flow, Transition transition) {
 		String timerId = parameters[0];
 		int interval = Integer.parseInt(parameters[1]);
 		int ticks = Integer.parseInt(parameters[2]);

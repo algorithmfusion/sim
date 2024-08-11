@@ -7,7 +7,7 @@ import static com.algorithmfusion.anu.sm.triggers.TriggersFactory.createTimerTri
 import java.util.Arrays;
 import java.util.Random;
 
-import com.algorithmfusion.anu.flow.BpmnFlow;
+import com.algorithmfusion.anu.flow.Flow;
 import com.algorithmfusion.anu.flow.FlowObserver;
 import com.algorithmfusion.anu.flow.FlowObserversRegistry;
 import com.algorithmfusion.anu.sm.api.State;
@@ -63,7 +63,7 @@ public class MainTuiCreateSps {
 
 		FlowObserver flowObserver = new FlowObserver();
 		
-		BpmnFlow flow = BpmnFlow.builder()
+		Flow flow = Flow.builder()
 							.stateMachineObserver(flowObserver)
 						.build();
 		
