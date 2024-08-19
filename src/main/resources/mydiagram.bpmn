@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0-nightly.20210427">
+  <process id="Process_1" name="DoorProcess" isExecutable="false">
+    <extensionElements />
+    <startEvent id="StartEvent_1" name="start">
+      <outgoing>Flow_0g16wxm</outgoing>
+    </startEvent>
+    <task id="Task_1" name="Close">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="LEAVE_STATE" value="TextStateObserver(&#34;Leave state (Close)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="TextStateObserver(&#34;Enter state (Close)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="Context(&#34;tui&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+      <incoming>Flow_0g16wxm</incoming>
+      <incoming>Flow_0ub9xyx</incoming>
+      <incoming>Flow_0ifaxya</incoming>
+      <outgoing>Flow_1x03flm</outgoing>
+      <outgoing>Flow_0ifaxya</outgoing>
+      <outgoing>Flow_1tmfxh9</outgoing>
+    </task>
+    <sequenceFlow id="Flow_0g16wxm" sourceRef="StartEvent_1" targetRef="Task_1">
+      <extensionElements />
+    </sequenceFlow>
+    <task id="Activity_08tpgix" name="Open">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="LEAVE_STATE" value="TextStateObserver(&#34;Leave state (Open)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="TextStateObserver(&#34;Enter state (Open)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="Context(&#34;tui&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+      <incoming>Flow_1i879k3</incoming>
+      <outgoing>Flow_050e3cf</outgoing>
+      <outgoing>Flow_01190mc</outgoing>
+    </task>
+    <task id="Activity_0t60kgh" name="Opening">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="LEAVE_STATE" value="TextStateObserver(&#34;Leave state (Opening)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="TextStateObserver(&#34;Enter state (Opening)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="Context(&#34;tui&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+      <incoming>Flow_1x03flm</incoming>
+      <incoming>Flow_0v5xvd3</incoming>
+      <incoming>Flow_1tmfxh9</incoming>
+      <outgoing>Flow_1i879k3</outgoing>
+      <outgoing>Flow_0mp888r</outgoing>
+    </task>
+    <task id="Activity_12cx2a9" name="Closing">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="LEAVE_STATE" value="TextStateObserver(&#34;Leave state (Closing)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="TextStateObserver(&#34;Enter state (Closing)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="Context(&#34;tui&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+      <incoming>Flow_050e3cf</incoming>
+      <incoming>Flow_0mp888r</incoming>
+      <incoming>Flow_1p3s87x</incoming>
+      <outgoing>Flow_0ub9xyx</outgoing>
+      <outgoing>Flow_0v5xvd3</outgoing>
+    </task>
+    <sequenceFlow id="Flow_1x03flm" name="pushButton" sourceRef="Task_1" targetRef="Activity_0t60kgh">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(openOnClose)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_1i879k3" name="complete" sourceRef="Activity_0t60kgh" targetRef="Activity_08tpgix">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(completeOpening)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_050e3cf" name="timeout" sourceRef="Activity_08tpgix" targetRef="Activity_12cx2a9">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(timeoutOnOpen)&#34;)" />
+          <zeebe:property name="PREPARE_TRANSITION" value="TimerTriggerPrepare(&#34;timeoutOnOpenId&#34;, &#34;10000&#34;,&#34;10&#34;)" />
+          <zeebe:property name="DISPOSE_TRANSITION" value="TimerTriggerDispose(&#34;timeoutOnOpenId&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0ub9xyx" name="complete" sourceRef="Activity_12cx2a9" targetRef="Task_1">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(completeClosing)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0v5xvd3" name="pushButton" sourceRef="Activity_12cx2a9" targetRef="Activity_0t60kgh">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(openOnClosing)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0mp888r" name="pushButton" sourceRef="Activity_0t60kgh" targetRef="Activity_12cx2a9">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(closeOnOpening)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <task id="Activity_16qp7pa" name="StayOpen">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="LEAVE_STATE" value="TextStateObserver(&#34;Leave state (StayOpen)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="TextStateObserver(&#34;Enter state (StayOpen)&#34;)" />
+          <zeebe:property name="ENTER_STATE" value="Context(&#34;tui&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+      <incoming>Flow_01190mc</incoming>
+      <outgoing>Flow_1p3s87x</outgoing>
+    </task>
+    <sequenceFlow id="Flow_01190mc" name="pushButton" sourceRef="Activity_08tpgix" targetRef="Activity_16qp7pa">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(stayopenOnOpen)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_1p3s87x" name="pushButton" sourceRef="Activity_16qp7pa" targetRef="Activity_12cx2a9">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(closeOnStayOpen)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0ifaxya" name="pushSOS" sourceRef="Task_1" targetRef="Task_1">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(pushSOSOnClose)&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_1tmfxh9" name="timeout" sourceRef="Task_1" targetRef="Activity_0t60kgh">
+      <extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="PERFORM_TRANSITION" value="TextTransitionObserver(&#34;Perform transition(timeoutOnOpen)&#34;)" />
+          <zeebe:property name="PREPARE_TRANSITION" value="TimerTriggerPrepare(&#34;timeoutOnCloseId&#34;, &#34;10000&#34;,&#34;10&#34;)" />
+          <zeebe:property name="DISPOSE_TRANSITION" value="TimerTriggerDispose(&#34;timeoutOnCloseId&#34;)" />
+        </zeebe:properties>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1y45yut_di" bpmnElement="StartEvent_1">
+        <omgdc:Bounds x="272" y="-78" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="278" y="-102" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fnuvqb_di" bpmnElement="Task_1">
+        <omgdc:Bounds x="240" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0i43uc8" bpmnElement="Activity_08tpgix">
+        <omgdc:Bounds x="240" y="370" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1kc1fny" bpmnElement="Activity_0t60kgh">
+        <omgdc:Bounds x="490" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0buf6q5" bpmnElement="Activity_12cx2a9">
+        <omgdc:Bounds x="-10" y="230" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_04rrwgs" bpmnElement="Activity_16qp7pa">
+        <omgdc:Bounds x="240" y="560" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0g16wxm_di" bpmnElement="Flow_0g16wxm">
+        <di:waypoint x="290" y="-42" />
+        <di:waypoint x="290" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x03flm_di" bpmnElement="Flow_1x03flm">
+        <di:waypoint x="340" y="140" />
+        <di:waypoint x="540" y="140" />
+        <di:waypoint x="540" y="230" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="412" y="122" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i879k3_di" bpmnElement="Flow_1i879k3">
+        <di:waypoint x="540" y="310" />
+        <di:waypoint x="540" y="410" />
+        <di:waypoint x="340" y="410" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="418" y="393" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_050e3cf_di" bpmnElement="Flow_050e3cf">
+        <di:waypoint x="240" y="410" />
+        <di:waypoint x="70" y="410" />
+        <di:waypoint x="70" y="310" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="137" y="392" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ub9xyx_di" bpmnElement="Flow_0ub9xyx">
+        <di:waypoint x="40" y="230" />
+        <di:waypoint x="40" y="120" />
+        <di:waypoint x="240" y="120" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="107" y="102" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0v5xvd3_di" bpmnElement="Flow_0v5xvd3">
+        <di:waypoint x="90" y="290" />
+        <di:waypoint x="490" y="290" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="262" y="272" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0mp888r_di" bpmnElement="Flow_0mp888r">
+        <di:waypoint x="490" y="250" />
+        <di:waypoint x="90" y="250" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="262" y="232" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_01190mc_di" bpmnElement="Flow_01190mc">
+        <di:waypoint x="290" y="450" />
+        <di:waypoint x="290" y="560" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="292" y="502" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p3s87x_di" bpmnElement="Flow_1p3s87x">
+        <di:waypoint x="240" y="600" />
+        <di:waypoint x="10" y="600" />
+        <di:waypoint x="10" y="310" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="97" y="582" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ifaxya_di" bpmnElement="Flow_0ifaxya">
+        <di:waypoint x="250" y="160" />
+        <di:waypoint x="250" y="210" />
+        <di:waypoint x="330" y="210" />
+        <di:waypoint x="330" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="268" y="192" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tmfxh9_di" bpmnElement="Flow_1tmfxh9">
+        <di:waypoint x="340" y="100" />
+        <di:waypoint x="630" y="100" />
+        <di:waypoint x="630" y="270" />
+        <di:waypoint x="590" y="270" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="421" y="83" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
