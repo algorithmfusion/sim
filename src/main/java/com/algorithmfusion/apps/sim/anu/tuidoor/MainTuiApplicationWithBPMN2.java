@@ -32,6 +32,8 @@ import com.algorithmfusion.anu.flow.FlowObservableLifeCycle;
 import com.algorithmfusion.anu.flow.FlowObserver;
 import com.algorithmfusion.anu.flow.FlowObserversRegistry;
 import com.algorithmfusion.anu.flow.FlowObserversRegistry.Builder;
+import com.algorithmfusion.anu.generic.api.ImmutableMultiValueMap;
+import com.algorithmfusion.anu.generic.impl.ImmutableMultiValueMapImpl;
 import com.algorithmfusion.anu.sm.api.State;
 import com.algorithmfusion.anu.sm.api.Transition;
 import com.algorithmfusion.anu.sm.observers.api.StateObserver;
@@ -40,8 +42,6 @@ import com.algorithmfusion.anu.storage.api.ObjectStorage;
 import com.algorithmfusion.anu.storage.impl.InMemoryObjectStorage;
 import com.algorithmfusion.apps.sim.anu.tui.FlowTui2;
 import com.algorithmfusion.libs.xml.parser.XmlParser;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 
 import jakarta.xml.bind.JAXBException;
 
@@ -62,12 +62,12 @@ public class MainTuiApplicationWithBPMN2 {
 		SequenceFlow startSequenceFlow = extractStartSequenceFlows(startEvent, processElements);
 		Map<String, Task> idToTask = extractTasks(processElements);
 		Map<String, SequenceFlow> idToSequenceFlow = extractSequenceFlows(startEvent, processElements);
-		Multimap<String, String> taskIdToEnterStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(ENTER_STATE), idToTask.values());
-		Multimap<String, String> taskIdToLeaveStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(LEAVE_STATE), idToTask.values());
+		ImmutableMultiValueMap<String, String> taskIdToEnterStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(ENTER_STATE), idToTask.values());
+		ImmutableMultiValueMap<String, String> taskIdToLeaveStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(LEAVE_STATE), idToTask.values());
 		
-		Multimap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PREPARE_TRANSITION), idToSequenceFlow.values());
-		Multimap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PERFORM_TRANSITION), idToSequenceFlow.values());
-		Multimap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(DISPOSE_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PREPARE_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PERFORM_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(DISPOSE_TRANSITION), idToSequenceFlow.values());
 		
 		Map<String, State> idToState = createStates(idToTask.values());
 		Map<String, Transition> idToTransition = createTransitions(idToState, idToSequenceFlow.values());
@@ -107,7 +107,7 @@ public class MainTuiApplicationWithBPMN2 {
 	private static void addEnterStateObservers(
 			Builder builder,
 			Map<String, State> idToState,
-			Multimap<String, String> taskIdToEnterStateExtensionElementPropertieValues,
+			ImmutableMultiValueMap<String, String> taskIdToEnterStateExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
 			Map<Object, Object> context) {
 		taskIdToEnterStateExtensionElementPropertieValues.keySet().forEach(taskId -> {
@@ -120,7 +120,7 @@ public class MainTuiApplicationWithBPMN2 {
 	private static void addLeaveStateObservers(
 			Builder builder,
 			Map<String, State> idToState,
-			Multimap<String, String> taskIdToLeaveStateExtensionElementPropertieValues,
+			ImmutableMultiValueMap<String, String> taskIdToLeaveStateExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration) {
 		taskIdToLeaveStateExtensionElementPropertieValues.keySet().forEach(taskId -> {
 			StateObserver[] stateObservers = taskIdToLeaveStateExtensionElementPropertieValues.get(taskId)
@@ -154,7 +154,7 @@ public class MainTuiApplicationWithBPMN2 {
 	private static void addPrepareTransitionObservers(
 			Builder builder,
 			Map<String, Transition> idToTransition,
-			Multimap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues,
+			ImmutableMultiValueMap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
 			Flow flow,
 			ObjectStorage objectStorage) {
@@ -169,7 +169,7 @@ public class MainTuiApplicationWithBPMN2 {
 	private static void addPerformTransitionObservers(
 			Builder builder,
 			Map<String, Transition> idToTransition,
-			Multimap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues,
+			ImmutableMultiValueMap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
 			Flow flow,
 			ObjectStorage objectStorage) {
@@ -184,7 +184,7 @@ public class MainTuiApplicationWithBPMN2 {
 	private static void addDisposeTransitionObservers(
 			Builder builder,
 			Map<String, Transition> idToTransition,
-			Multimap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues,
+			ImmutableMultiValueMap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues,
 			FlowConfiguration flowConfiguration,
 			Flow flow,
 			ObjectStorage objectStorage) {
@@ -294,9 +294,9 @@ public class MainTuiApplicationWithBPMN2 {
 		return sequenceFlow;
 	}
 	
-	private static Multimap<String, String> extractTaskExtensionElementPropertieValues(String extensionId, Collection<Task> tasks) {
+	private static ImmutableMultiValueMap<String, String> extractTaskExtensionElementPropertieValues(String extensionId, Collection<Task> tasks) {
 		PropertyNameMatcher propertyNameMatcher = new PropertyNameMatcher(extensionId);
-		Multimap<String, String> taskIdToExtensionElementPropertieValues = ArrayListMultimap.create();
+		ImmutableMultiValueMap<String, String> taskIdToExtensionElementPropertieValues = new ImmutableMultiValueMapImpl<>();
 		tasks.forEach(task -> {
 			List<String> matchingPropertyValues = getMatchingPropertyValues(propertyNameMatcher, task);
 			if (!matchingPropertyValues.isEmpty()) {
@@ -315,9 +315,9 @@ public class MainTuiApplicationWithBPMN2 {
 	
 
 
-	private static Multimap<String, String> extractSequenceFlowExtensionElementPropertieValues(String extensionId, Collection<SequenceFlow> sequenceFlows) {
+	private static ImmutableMultiValueMap<String, String> extractSequenceFlowExtensionElementPropertieValues(String extensionId, Collection<SequenceFlow> sequenceFlows) {
 		PropertyNameMatcher propertyNameMatcher = new PropertyNameMatcher(extensionId);
-		Multimap<String, String> sequenceFlowIdToExtensionElementPropertieValues = ArrayListMultimap.create();
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToExtensionElementPropertieValues = new ImmutableMultiValueMapImpl<>();
 		sequenceFlows.forEach(sequenceFlow -> {
 			List<String> matchingPropertyValues = getMatchingPropertyValues(propertyNameMatcher, sequenceFlow);
 			if (!matchingPropertyValues.isEmpty()) {
