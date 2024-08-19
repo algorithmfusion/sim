@@ -1,5 +1,6 @@
 package com.algorithmfusion.apps.sim.anu.tuidoor;
 
+import static com.algorithmfusion.anu.flow.FlowConfiguration.asString;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.DISPOSE_TRANSITION;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.ENTER_STATE;
 import static com.algorithmfusion.anu.flow.FlowObservableLifeCycle.LEAVE_STATE;
@@ -62,12 +63,12 @@ public class MainTuiApplicationWithBPMN2 {
 		SequenceFlow startSequenceFlow = extractStartSequenceFlows(startEvent, processElements);
 		Map<String, Task> idToTask = extractTasks(processElements);
 		Map<String, SequenceFlow> idToSequenceFlow = extractSequenceFlows(startEvent, processElements);
-		ImmutableMultiValueMap<String, String> taskIdToEnterStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(ENTER_STATE), idToTask.values());
-		ImmutableMultiValueMap<String, String> taskIdToLeaveStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(toExtensionId(LEAVE_STATE), idToTask.values());
+		ImmutableMultiValueMap<String, String> taskIdToEnterStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(asString(ENTER_STATE), idToTask.values());
+		ImmutableMultiValueMap<String, String> taskIdToLeaveStateExtensionElementPropertieValues = extractTaskExtensionElementPropertieValues(asString(LEAVE_STATE), idToTask.values());
 		
-		ImmutableMultiValueMap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PREPARE_TRANSITION), idToSequenceFlow.values());
-		ImmutableMultiValueMap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(PERFORM_TRANSITION), idToSequenceFlow.values());
-		ImmutableMultiValueMap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(toExtensionId(DISPOSE_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToPrepareTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(asString(PREPARE_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToPerformTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(asString(PERFORM_TRANSITION), idToSequenceFlow.values());
+		ImmutableMultiValueMap<String, String> sequenceFlowIdToDisposeTransitionExtensionElementPropertieValues = extractSequenceFlowExtensionElementPropertieValues(asString(DISPOSE_TRANSITION), idToSequenceFlow.values());
 		
 		Map<String, State> idToState = createStates(idToTask.values());
 		Map<String, Transition> idToTransition = createTransitions(idToState, idToSequenceFlow.values());
@@ -347,10 +348,6 @@ public class MainTuiApplicationWithBPMN2 {
 			return nameToMatch.equals(property.getName());
 		}
 		
-	}
-
-	private static String toExtensionId(FlowObservableLifeCycle enterState) {
-		return enterState.name();
 	}
 
 	private static Object[] toObjectArray(Object[] parameters, Map<Object, Object> context) {
